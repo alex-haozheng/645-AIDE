@@ -15,3 +15,8 @@ df.to_csv(output_file, index=False, header=False)
 married_attr = [' Widowed', ' Separated', ' Married-civ-spouse', ' Married-spouse-absent', ' Married-AF-spouse']
 unmarried_attr = [' Divorced',' Never-married']
 
+marital_status = df.iloc[:, 5]
+for m in married_attr:
+	marital_status[marital_status == m] = 'Married'
+for u in married_attr:
+	marital_status[marital_status == u] = 'U'
