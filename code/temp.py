@@ -1,5 +1,6 @@
 import numpy as np
 import psycopg2
+import scipy
 
 
 # TODO change variable to connect to presgresdb
@@ -8,7 +9,7 @@ DB_USER = ""
 DB_PASS = ""
 DB_HOST = "localhost"
 DB_PORT = "5432"
- 
+
 try:
     conn = psycopg2.connect(database=DB_NAME,
                             user=DB_USER,
@@ -27,23 +28,18 @@ except:
 # conn.commit()
 # conn.close()
 
-
-
-
 # includes married people
-D_Q = None
+D_Q = "married"
 
 # includes unmarried people
-D_R = None
+D_R = "unmarried"
 
 D = [D_Q, D_R]
 
 # dimension attribute (for group by)
-A = ["age", "workclass", "fnlwgt", "education", "education-num", "marital-status", "occupation", "relationship", 
-     "race", "sex", "capital-gain", "captial-loss", "hours-per-week", "native-country"]
+A = ['workclass','education','occupation','relationship','race','sex','native_country','salary_range']
 # Measure attribute (for aggregate)
-M = ["age", "workclass", "fnlwgt", "education", "education-num", "marital-status", "occupation", "relationship", 
-     "race", "sex", "capital-gain", "captial-loss", "hours-per-week", "native-country"]
+M = ['age','fnlwgt', 'education_num','capital_gain','capital_loss','hours_per_week']
 # aggregate function 
 F = ['MIN', 'MAX', 'COUNT', 'SUM', 'AVG']
 
@@ -52,7 +48,6 @@ F = ['MIN', 'MAX', 'COUNT', 'SUM', 'AVG']
 
 def generate_queries(A, M, F, D_Q, D_R):
     queries = []
-
     for a in A:
         for m in M:
             for f in F:
@@ -60,7 +55,11 @@ def generate_queries(A, M, F, D_Q, D_R):
                 query2 = f"SELECT {a}, {f}{m}), FROM {D_R} GROUP BY {a}"
                 queries.append((query1, query2))
     return queries
-                
+
+queries = generate_queries(A, M, F, D_Q, D_R)
+
+for query in queries:
+    print(query)
 # Unoptimized part 2 exhaustive search
 def problem_statement():
     # iterate through all possible a and m
@@ -76,10 +75,5 @@ def problem_statement():
             print(e)
         return
 
+def normalization(a, b):
 
-# for calculating the deviation (distnace) using K-L divergence
-def KL(a, b):
-    a = np.asarray(a, dtype=np.float)
-    b = np.asarray(b, dtype=np.float)
-
-    return np.sum(np.where(a != 0, a * np.log(a / b), 0))
