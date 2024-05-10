@@ -2,7 +2,7 @@ import numpy as np
 import psycopg2
 
 
-# TODO connect it to your local postgresdb
+# TODO change variable to connect to presgresdb
 DB_NAME = "tkgafrwp"
 DB_USER = "tkgafrwp"
 DB_PASS = "iYYtLAXVbid-i6MV3NO1EnU-_9SW2uEi"
@@ -39,6 +39,8 @@ D_Q = None
 # includes unmarried people
 D_R = None
 
+D = [D_Q, D_R]
+
 # dimension attribute (for group by)
 A = ["age", "workclass", "fnlwgt", "education", "education-num", "marital-status", "occupation", "relationship", 
      "race", "sex", "capital-gain", "captial-loss", "hours-per-week", "native-country"]
@@ -51,16 +53,23 @@ F = ['MIN', 'MAX', 'COUNT', 'SUM', 'AVG']
 # iterate a, m, f into this query
 # SELECT a, f(m), FROM D group by a
 
+
 def problem_statement():
     
-    cur = conn.cursor()
-    cur.execute("""
-        INSERT INTO Employee (ID,NAME,EMAIL) VALUES
-        (1,'Alan Walker','awalker@gmail.com'), 
-        (2,'Steve Jobs','sjobs@gmail.com')
-    """)
-    conn.commit()
-    conn.close()
+    # iterate through all possible a and m
+    for m in M:
+        for a in A:
+            for f in F:
+                for d in D:
+                    try:
+                        query = f"SELECT {a}, {f}({m}), FROM {d} GROUP BY {a}"
+                        cur = conn.cursor()
+                        cur.execute(query)
+                        conn.commit()
+                        conn.close()
+                    except Exception as e:
+                        print(e)
+    
     return
 
 
