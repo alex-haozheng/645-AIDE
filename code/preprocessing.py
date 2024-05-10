@@ -4,7 +4,7 @@ input_file = '../rawdata/adult.data'
 output_file = '../data/fullset.csv'
 
 # read the csv
-df = pd.read_csv(input_file, header=None)
+df = pd.read_csv(input_file, header=None, delimiter=', ')
 
 # replace all ? as None in the db
 df.replace(' ?', None, inplace=True)

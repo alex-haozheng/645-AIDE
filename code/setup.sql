@@ -7,7 +7,7 @@ create table adults (age int NULL, workclass varchar(30) NULL, fnlwgt int NULL,
 	hours_per_week int NULL, native_country varchar(30) NULL, income varchar(10) NULL);
 
 -- inserting data
-\copy adults from 'census+income/adult.data' delimiter ','
+\copy adults from '/data/processed.csv' delimiter ',' csv
 
 -- tables for brute force (probably not necessary)
 create table unmarried as
