@@ -4,20 +4,10 @@ import psycopg2
 
 # TODO change variable to connect to presgresdb
 DB_NAME = "census"
-DB_USER = ""
-DB_PASS = ""
 DB_HOST = "localhost"
 DB_PORT = "5432"
- 
-try:
-    conn = psycopg2.connect(database=DB_NAME,
-                            user=DB_USER,
-                            password=DB_PASS,
-                            host=DB_HOST,
-                            port=DB_PORT)
-    print("Database connected successfully")
-except:
-    print("Database not connected successfully")
+
+conn = psycopg2.connect(database=DB_NAME,host=DB_HOST,port=DB_PORT)
 
 # example code for query
 #
@@ -26,9 +16,6 @@ except:
 # temp = cur.fetchall()
 # conn.commit()
 # conn.close()
-
-
-
 
 # includes married people
 D_Q = None
