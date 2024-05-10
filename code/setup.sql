@@ -10,9 +10,9 @@ create table adults (age int NULL, workclass varchar(30) NULL, fnlwgt int NULL,
 \copy adults from 'census+income/adult.data' delimiter ','
 
 -- tables for brute force (probably not necessary)
--- create table unmarried as
--- 	select * from adults where marital_status ~ '(Divorced|Never-married)';
--- alter table unmarried drop marital_status;
--- create table married as
--- 	select * from adults where marital_status ~ '(Married-civ-spouse|Divorced|Never-married|Separated|Widowed|Married-spouse-absent|Married-AF-spouse)';
--- alter table married drop marital_status;
+create table unmarried as
+	select * from adults where marital_status = 'Unmarried';
+alter table unmarried drop marital_status;
+create table married as
+	select * from adults where marital_status = 'Married';
+alter table married drop marital_status;
