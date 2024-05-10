@@ -11,3 +11,7 @@ df.replace(' ?', None, inplace=True)
 
 # Write the modified DataFrame to a new CSV file
 df.to_csv(output_file, index=False, header=False)
+
+married_attr = [' Widowed', ' Separated', ' Married-civ-spouse', ' Married-spouse-absent', ' Married-AF-spouse']
+unmarried_attr = [' Divorced',' Never-married']
+
