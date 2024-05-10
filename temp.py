@@ -55,7 +55,6 @@ F = ['MIN', 'MAX', 'COUNT', 'SUM', 'AVG']
 
 
 def problem_statement():
-    
     # iterate through all possible a and m
     for m in M:
         for a in A:
@@ -69,7 +68,6 @@ def problem_statement():
                         conn.close()
                     except Exception as e:
                         print(e)
-    
     return
 
 
