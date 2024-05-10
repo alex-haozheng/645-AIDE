@@ -1,6 +1,6 @@
-drop table adults if exists cascade;
-drop table unmarried if exists cascade;
-drop table married if exists cascade;
+drop table if exists adults cascade;
+drop table if exists unmarried cascade;
+drop table if exists married cascade;
 -- creating the tables
 create table adults (age int NULL, workclass varchar(30) NULL, fnlwgt int NULL, 
 	education varchar(30) NULL, education_num int NULL, marital_status varchar(30) NULL, 
