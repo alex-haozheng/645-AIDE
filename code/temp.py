@@ -3,10 +3,10 @@ import psycopg2
 
 
 # TODO change variable to connect to presgresdb
-DB_NAME = "tkgafrwp"
-DB_USER = "tkgafrwp"
-DB_PASS = "iYYtLAXVbid-i6MV3NO1EnU-_9SW2uEi"
-DB_HOST = "tyke.db.elephantsql.com"
+DB_NAME = "census"
+DB_USER = ""
+DB_PASS = ""
+DB_HOST = "localhost"
 DB_PORT = "5432"
  
 try:
@@ -20,16 +20,15 @@ except:
     print("Database not connected successfully")
 
 # example code for query
-'''
-cur = conn.cursor()
-cur.execute("""
-    INSERT INTO Employee (ID,NAME,EMAIL) VALUES
-    (1,'Alan Walker','awalker@gmail.com'), 
-    (2,'Steve Jobs','sjobs@gmail.com')
-  """)
-conn.commit()
-conn.close()
-'''
+#
+# cur = conn.cursor()
+# cur.execute("SELECT * FROM adults")
+# temp = cur.fetchall()
+# conn.commit()
+# conn.close()
+
+
+
 
 # includes married people
 D_Q = None
