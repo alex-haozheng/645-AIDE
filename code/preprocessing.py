@@ -1,7 +1,7 @@
 import pandas as pd
 
-input_file = '../rawdata/adult.data'
-output_file = '../data/processed.csv'
+input_file = 'rawdata/adult.data'
+output_file = 'data/processed.csv'
 
 headers = ["age", "workclass", "fnlwgt", "education", "education_num", "marital_status",
            "occupation", "relationship", "race", "sex", "capital_gain", "capital_loss", 
@@ -18,6 +18,6 @@ unmarried_attr = ['Divorced','Never-married']
 
 for m in married_attr:
 	df['marital_status'] = df['marital_status'].replace(m, 'Married')
-for u in married_attr:
+for u in unmarried_attr:
 	df['marital_status'] = df['marital_status'].replace(u, 'Unmarried')
-df.to_csv('../data/processed.csv', index=False, header=False)
+df.to_csv(output_file, index=False, header=False)
