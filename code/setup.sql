@@ -8,8 +8,8 @@ create table adults (age int NULL, workclass varchar(30) NULL, fnlwgt int NULL,
 	sex varchar(30) NULL, capital_gain int NULL, capital_loss int NULL, 
 	hours_per_week int NULL, native_country varchar(30) NULL, income varchar(10) NULL);
 
--- inserting data
-\copy adults from '/Users/sazzle/Desktop/645/645-AIDE/data/processed.csv' delimiter ',' csv
+-- inserting data (change as necessary)
+\copy adults from 'data/processed.csv' delimiter ',' csv
 
 -- tables for brute force (probably not necessary)
 create table unmarried as
