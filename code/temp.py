@@ -53,24 +53,32 @@ query: sql query, query_res: result list of tuples, distance: distance}
 
 # iterate a, m, f into this query
 # SELECT a, f(m), FROM D group by a
-def generate_queries(A, M, F):
+def generate_queries(A, M, F, D):
     query_obj = {}
     for a in A:
         for m in M:
             for f in F:
-                query = f"SELECT {a}, {f}({m}) FROM {d} GROUP BY {a}"
-                query_obj[(a, f, m, d)] = [query]
+                for d in D:
+                    query = f"SELECT {a}, {f}({m}) FROM {d} GROUP BY {a}"
+                    query_obj[(a, f, m, d)] = [query]
     return query_obj
+
 
 def normalization(arr1, arr2):
     sum1 = sum(arr1)
     sum2 = sum(arr2)
-    norm_1 = [elem / sum1 for elem in arr1]
-    norm_2 = [elem / sum2 for elem in arr2]
+    norm_1 = arr1
+    norm_2 = arr2
+    if sum1 != 0:
+        norm_1 = [elem / sum1 for elem in arr1]
+    if sum2 != 0:
+        norm_2 = [elem / sum2 for elem in arr2]
+
     return norm_1, norm_2
 
+
 # Unoptimized part 2 exhaustive search
-def problem_statement():
+def get_db_res():
     # iterate through all possible a and m
     query_obj = generate_queries(A, M, F, D)
     cur = conn.cursor()
@@ -84,4 +92,55 @@ def problem_statement():
     return query_obj
 
 
+def get_normalized_list(query_obj1, query_obj2):
+    arr1 = []
+    arr2 = []
+    query_tuple_list_1 = query_obj1[1]
+    query_tuple_list_2 = query_obj2[1]
 
+    for elem in query_tuple_list_1:
+        temp = float(elem[1])
+        arr1.append(temp)
+
+    for elem in query_tuple_list_2:
+        temp = float(elem[1])
+        arr2.append(temp)
+
+    arr1, arr2 = normalization(arr1, arr2)
+    return arr1, arr2
+
+
+def get_res(query_obj):
+    result_dict = {}
+    for k, v in query_obj.items():
+        result_k = k[:-1]
+        if result_k in result_dict:
+            continue
+
+        k_arr = list(k)
+        k_arr[3] = 'married'
+        k_1 = tuple(k_arr)
+        k_arr[3] = 'unmarried'
+        k_2 = tuple(k_arr)
+
+        arr1, arr2 = get_normalized_list(query_obj[k_1], query_obj[k_2])
+        if len(arr1) > len(arr2):
+            arr1 = arr1[:len(arr2)]
+        elif len(arr2) > len(arr1):
+            arr2 = arr2[:len(arr1)]
+
+        distance = scipy.stats.entropy(arr1, arr2)
+        result_dict[result_k] = distance
+
+    sorted_dict = dict(sorted(result_dict.items(), key=lambda item: item[1], reverse=True))
+
+    # Get the top 10 items from the sorted dictionary
+    top_10 = dict(list(sorted_dict.items())[:10])
+
+    print("Top 10 dictionary items with highest distance:")
+    for key, value in top_10.items():
+        print(key, "=", value)
+
+    return result_dict
+
+get_res(get_db_res())
