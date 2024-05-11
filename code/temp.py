@@ -59,9 +59,16 @@ def generate_queries(A, M, F, D):
         for m in M:
             for f in F:
                 for d in D:
-                    query = f"SELECT {a}, {f}({m}) FROM {d} GROUP BY {a}"
+                    query = f"SELECT {a}, {f}({m}) FROM {d} WHERE {a} IS NOT NULL GROUP BY {a}"
                     query_obj[(a, f, m, d)] = [query]
     return query_obj
+
+
+# # for 4.2 multiple aggregate optimization
+# def generate_queries(A, M, F, D):
+#     query_obj = {}
+#     for a in A:
+
 
 
 def normalization(arr1, arr2):
@@ -78,8 +85,9 @@ def normalization(arr1, arr2):
 
 
 # Unoptimized part 2 exhaustive search
+# the function returns the query_obj[(a, m, f, d)] = [query:str, query_res: list(tuple)]
 def get_db_res():
-    # iterate through all possible a and m
+    # get the query output given a specific query
     query_obj = generate_queries(A, M, F, D)
     cur = conn.cursor()
     for k, v in query_obj.items():
@@ -91,24 +99,25 @@ def get_db_res():
 
     return query_obj
 
-
-def get_normalized_list(query_obj1: list[tuple], query_obj2: list[tuple]):
+# This function outputs the two normalized arrays for a specific a, m, f query with married and unmarried
+def get_normalized_list(query_obj1, query_obj2):
     arr1 = []
     arr2 = []
 
-    query_tuple_list_1 = [elem for elem in query_obj1[1] if elem[0] is not None]
+    # converting the tuples into dictionary for easier manipulation
     query_tuple_dict_1 = {}
-    query_tuple_list_2 = [elem for elem in query_obj2[1] if elem[0] is not None]
     query_tuple_dict_2 = {}
 
-    for elem in query_tuple_list_1:
-        query_tuple_dict_1[elem[0]] = elem[1]
+    for tuple in query_obj1[1]:
+        query_tuple_dict_1[tuple[0]] = tuple[1]
 
-    for elem in query_tuple_list_2:
-        query_tuple_dict_2[elem[0]] = elem[1]
+    for tuple in query_obj2[1]:
+        query_tuple_dict_2[tuple[0]] = tuple[1]
 
+    # find common attributes of the keys for evaluation
     common_attribute = set(query_tuple_dict_1.keys()) & set(query_tuple_dict_2.keys())
 
+    # appending into the list, uses 1e-10 to avoid the scipy.stats.entropy warning
     for key in common_attribute:
         num1 = float(query_tuple_dict_1[key])
         num2 = float(query_tuple_dict_2[key])
@@ -133,6 +142,7 @@ def get_res(query_obj):
         if result_k in result_dict:
             continue
 
+        # outputs the key array married and unmarried.
         k_arr = list(k)
         k_arr[3] = 'married'
         k_1 = tuple(k_arr)
