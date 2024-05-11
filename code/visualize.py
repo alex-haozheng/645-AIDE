@@ -21,16 +21,23 @@ with con.cursor() as cur:
 	ref = cur.fetchall()
 
 	# plot the graph using the list
+	
+	# this finds the max length of the queries or max categories
 	n = max(len(tgt), len(ref))
+
 	# avg_tgt = tgt.values()
 	# avg_ref = ref.values()
+
+	# convert to dataframse labeled with category, value (projection of a query with group, aggregate value)
 	tgt_df = pd.DataFrame(tgt, columns=['category', 'value'])
 	ref_df = pd.DataFrame(ref, columns=['category', 'value'])
+	# merge for plotting ("outer" join on "category")
 	merged_df = pd.merge(tgt_df, ref_df, how='outer', on='category')
 	merged_df.columns = ['category', 'married', 'unmarried']
-	# fill in blanks
+	# fill in blanks if one of the dataframes missing a category
 	merged_df.fillna("0", inplace=True)
 	print(merged_df)
+	# this is to convert it into rows for plotting in catplot (w/ help from chatgpt)
 	melted_df = pd.melt(merged_df, id_vars=['category'], value_vars=['married', 'unmarried'], var_name='marital_status', value_name='value')
 	print(melted_df)
 	sns.catplot(x='category', y='value', hue='marital_status', data=melted_df, kind='bar')
