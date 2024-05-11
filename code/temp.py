@@ -20,6 +20,14 @@ try:
 except:
     print("Database not connected successfully")
 
+# example code for query
+#
+# cur = conn.cursor()
+# cur.execute("SELECT * FROM adults")
+# temp = cur.fetchall()
+# conn.commit()
+# conn.close()
+
 # includes married people
 D_Q = "married"
 
