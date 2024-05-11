@@ -97,26 +97,30 @@ def get_normalized_list(query_obj1: list[tuple], query_obj2: list[tuple]):
     arr2 = []
 
     query_tuple_list_1 = [elem for elem in query_obj1[1] if elem[0] is not None]
-    query_tuple_list_1 = sorted(query_tuple_list_1, key=lambda x: x[0])
-
+    query_tuple_dict_1 = {}
     query_tuple_list_2 = [elem for elem in query_obj2[1] if elem[0] is not None]
-    query_tuple_list_2 = sorted(query_tuple_list_2, key=lambda x: x[0])
+    query_tuple_dict_2 = {}
 
-    min_iter = min(len(query_tuple_list_1), len(query_tuple_list_2))
+    for elem in query_tuple_list_1:
+        query_tuple_dict_1[elem[0]] = elem[1]
 
-    for i in range(min_iter):
-        tuple1 = query_tuple_list_1[i]
-        tuple2 = query_tuple_list_2[i]
+    for elem in query_tuple_list_2:
+        query_tuple_dict_2[elem[0]] = elem[1]
 
-        if tuple1[0] == tuple2[0]:
-            if tuple1[0] != 0:
-                arr1.append(float(tuple1[1]))
-            else:
-                arr1.append(float(1e-10))
-            if tuple2[0] != 0:
-                arr2.append(float(tuple2[1]))
-            else:
-                arr2.append(float(1e-10))
+    common_attribute = set(query_tuple_dict_1.keys()) & set(query_tuple_dict_2.keys())
+
+    for key in common_attribute:
+        num1 = float(query_tuple_dict_1[key])
+        num2 = float(query_tuple_dict_2[key])
+        if num1 != 0:
+            arr1.append(float(num1))
+        else:
+            arr1.append(float(1e-10))
+
+        if num2 != 0:
+            arr2.append(float(num2))
+        else:
+            arr2.append(float(1e-10))
 
     arr1, arr2 = normalization(arr1, arr2)
     return arr1, arr2
