@@ -92,19 +92,31 @@ def get_db_res():
     return query_obj
 
 
-def get_normalized_list(query_obj1, query_obj2):
+def get_normalized_list(query_obj1: list[tuple], query_obj2: list[tuple]):
     arr1 = []
     arr2 = []
-    query_tuple_list_1 = query_obj1[1]
-    query_tuple_list_2 = query_obj2[1]
 
-    for elem in query_tuple_list_1:
-        temp = float(elem[1])
-        arr1.append(temp)
+    query_tuple_list_1 = [elem for elem in query_obj1[1] if elem[0] is not None]
+    query_tuple_list_1 = sorted(query_tuple_list_1, key=lambda x: x[0])
 
-    for elem in query_tuple_list_2:
-        temp = float(elem[1])
-        arr2.append(temp)
+    query_tuple_list_2 = [elem for elem in query_obj2[1] if elem[0] is not None]
+    query_tuple_list_2 = sorted(query_tuple_list_2, key=lambda x: x[0])
+
+    min_iter = min(len(query_tuple_list_1), len(query_tuple_list_2))
+
+    for i in range(min_iter):
+        tuple1 = query_tuple_list_1[i]
+        tuple2 = query_tuple_list_2[i]
+
+        if tuple1[0] == tuple2[0]:
+            if tuple1[0] != 0:
+                arr1.append(float(tuple1[1]))
+            else:
+                arr1.append(float(1e-10))
+            if tuple2[0] != 0:
+                arr2.append(float(tuple2[1]))
+            else:
+                arr2.append(float(1e-10))
 
     arr1, arr2 = normalization(arr1, arr2)
     return arr1, arr2
@@ -124,10 +136,6 @@ def get_res(query_obj):
         k_2 = tuple(k_arr)
 
         arr1, arr2 = get_normalized_list(query_obj[k_1], query_obj[k_2])
-        if len(arr1) > len(arr2):
-            arr1 = arr1[:len(arr2)]
-        elif len(arr2) > len(arr1):
-            arr2 = arr2[:len(arr1)]
 
         distance = scipy.stats.entropy(arr1, arr2)
         result_dict[result_k] = distance
@@ -142,5 +150,6 @@ def get_res(query_obj):
         print(key, "=", value)
 
     return result_dict
+
 
 get_res(get_db_res())
