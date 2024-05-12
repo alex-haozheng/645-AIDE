@@ -62,12 +62,8 @@ def generate_queries(A, M, F, D):
 def normalization(arr1, arr2):
     sum1 = sum(arr1)
     sum2 = sum(arr2)
-    norm_1 = arr1
-    norm_2 = arr2
-    if sum1 != 0:
-        norm_1 = [elem / sum1 for elem in arr1]
-    if sum2 != 0:
-        norm_2 = [elem / sum2 for elem in arr2]
+    norm_1 = [elem / sum1 for elem in arr1]
+    norm_2 = [elem / sum2 for elem in arr2]
 
     return norm_1, norm_2
 
@@ -88,7 +84,7 @@ def get_normalized_list(query_obj1, query_obj2):
     for key in common_attribute:
         num1 = float(query_tuple_dict_1[key])
         num2 = float(query_tuple_dict_2[key])
-        arr1.append(float(query_tuple_dict_1[key]) if num1 != 0 else float(1e-10))
+        arr1.append(float(num1) if num1 != 0 else float(1e-10))
         arr2.append(float(num2) if num2 != 0 else float(1e-10))
 
     arr1, arr2 = normalization(arr1, arr2)
