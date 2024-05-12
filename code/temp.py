@@ -19,13 +19,6 @@ try:
 except:
     print("Database not connected successfully")
 
-# example code for query
-#
-# cur = conn.cursor()
-# cur.execute("SELECT * FROM adults")
-# temp = cur.fetchall()
-# conn.commit()
-# conn.close()
 
 # includes married people
 D_Q = "married"
@@ -58,22 +51,9 @@ def generate_queries(A, M, F, D):
         for m in M:
             for f in F:
                 for d in D:
-                    query = f"SELECT {a}, {f}({m}) FROM {d} GROUP BY {a}"
-                    # ditionary of {key: query identifier, value: string query}
+                    query = f"SELECT {a}, {f}({m}) FROM {d} WHERE {a} IS NOT NULL GROUP BY {a}"
                     query_obj[(a, f, m, d)] = [query]
     return query_obj
-
-
-# for 4.2 multiple aggregate optimization
-# def generate_queries(A, M, F, D):
-#     query_obj = {}
-#     for a in A:
-#         m_str = ','.join(M)
-#         F_str = ','.join(F)
-#
-#         for d in D:
-#             query = f"SELECT {a}, {f}({m}) FROM {d} WHERE {a} IS NOT NULL GROUP BY {a}"
-
 
 
 def normalization(arr1, arr2):
@@ -106,6 +86,7 @@ def get_db_res(query_obj):
 
     return query_obj
 
+
 # This function outputs the two normalized arrays for a specific a, m, f query with married and unmarried
 def get_normalized_list(query_obj1, query_obj2):
     arr1 = []
@@ -114,11 +95,10 @@ def get_normalized_list(query_obj1, query_obj2):
     # converting the tuples into dictionary for easier manipulation
     query_tuple_dict_1 = {}
     query_tuple_dict_2 = {}
-
-    for tuple in query_obj1[1]:
+    for tuple in query_obj1:
         query_tuple_dict_1[tuple[0]] = tuple[1]
 
-    for tuple in query_obj2[1]:
+    for tuple in query_obj2:
         query_tuple_dict_2[tuple[0]] = tuple[1]
 
     # find common attributes of the keys for evaluation
@@ -156,7 +136,7 @@ def get_res(query_obj):
         k_arr[3] = 'unmarried'
         k_2 = tuple(k_arr)
 
-        arr1, arr2 = get_normalized_list(query_obj[k_1], query_obj[k_2])
+        arr1, arr2 = get_normalized_list(query_obj[k_1][1], query_obj[k_2][1])
 
         distance = scipy.stats.entropy(arr1, arr2)
         result_dict[result_k] = distance
