@@ -60,6 +60,7 @@ def generate_queries(A, M, F, D):
             for f in F:
                 for d in D:
                     query = f"SELECT {a}, {f}({m}) FROM {d} GROUP BY {a}"
+                    # ditionary of {key: query identifier, value: string query}
                     query_obj[(a, f, m, d)] = [query]
     return query_obj
 
@@ -83,9 +84,12 @@ def get_db_res():
     query_obj = generate_queries(A, M, F, D)
     cur = conn.cursor()
     for k, v in query_obj.items():
-        cur.execute(query_obj[k][0])
+        cur.execute(v[0])
         query_res = cur.fetchall()
+        # list of tuples
         conn.commit()
+        # adding it into the value of dictionary 
+        # first index is string second is return value
         query_obj[k].append(query_res)
     conn.close()
 
