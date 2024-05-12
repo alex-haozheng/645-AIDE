@@ -3,7 +3,6 @@ import psycopg2
 import scipy
 import numpy as np
 
-# TODO change variable to connect to presgresdb
 DB_NAME = "census"
 DB_USER = ""
 DB_PASS = ""
@@ -64,10 +63,15 @@ def generate_queries(A, M, F, D):
     return query_obj
 
 
-# # for 4.2 multiple aggregate optimization
+# for 4.2 multiple aggregate optimization
 # def generate_queries(A, M, F, D):
 #     query_obj = {}
 #     for a in A:
+#         m_str = ','.join(M)
+#         F_str = ','.join(F)
+#
+#         for d in D:
+#             query = f"SELECT {a}, {f}({m}) FROM {d} WHERE {a} IS NOT NULL GROUP BY {a}"
 
 
 
@@ -86,9 +90,8 @@ def normalization(arr1, arr2):
 
 # Unoptimized part 2 exhaustive search
 # the function returns the query_obj[(a, m, f, d)] = [query:str, query_res: list(tuple)]
-def get_db_res():
+def get_db_res(query_obj):
     # get the query output given a specific query
-    query_obj = generate_queries(A, M, F, D)
     cur = conn.cursor()
     for k, v in query_obj.items():
         cur.execute(query_obj[k][0])
@@ -166,4 +169,4 @@ def get_res(query_obj):
     return result_dict
 
 
-get_res(get_db_res())
+get_res(get_db_res(generate_queries(A, M, F, D)))
