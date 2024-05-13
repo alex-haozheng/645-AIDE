@@ -11,7 +11,7 @@ NOTE: uses seaborn for better visualization
 will need to generalize a function in the end with input of query (a, m, f)'''
 
 # connect to db
-con = psy.connect(database='yiding', host='localhost')
+con = psy.connect(database='census', host='localhost')
 
 with con.cursor() as cur:
 	cur.execute('select native_country, max(capital_gain) from married group by native_country')
