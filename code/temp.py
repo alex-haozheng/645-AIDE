@@ -1,7 +1,6 @@
 import numpy as np
 import psycopg2
 import scipy
-import numpy as np
 
 DB_NAME = "census"
 DB_USER = ""
@@ -19,13 +18,6 @@ try:
 except:
     print("Database not connected successfully")
 
-# example code for query
-#
-# cur = conn.cursor()
-# cur.execute("SELECT * FROM adults")
-# temp = cur.fetchall()
-# conn.commit()
-# conn.close()
 
 # includes married people
 D_Q = "married"
@@ -46,7 +38,7 @@ F = ['MIN', 'MAX', 'COUNT', 'SUM', 'AVG']
 
 '''
 obj query_obj = {a: element in A, m: element in M, f: element in F, d: database name, 
-query: sql query, query_res: result list of tuples, distance: distance}
+query: sql query, query_res: result list of tuples} query_res example: [('china', f(m)), ('US', f(m))] list of numbers between 0 and 1
 '''
 
 
@@ -54,57 +46,27 @@ query: sql query, query_res: result list of tuples, distance: distance}
 # SELECT a, f(m), FROM D group by a
 def generate_queries(A, M, F, D):
     query_obj = {}
+    cur = conn.cursor()
     for a in A:
         for m in M:
             for f in F:
                 for d in D:
-                    query = f"SELECT {a}, {f}({m}) FROM {d} GROUP BY {a}"
-                    # ditionary of {key: query identifier, value: string query}
-                    query_obj[(a, f, m, d)] = [query]
+                    query = f"SELECT {a}, {f}({m}) FROM {d} WHERE {a} IS NOT NULL GROUP BY {a}"
+                    cur.execute(query)
+                    conn.commit()
+                    query_obj[(a, f, m, d)] = cur.fetchall()
+    conn.close()
     return query_obj
-
-
-# for 4.2 multiple aggregate optimization
-# def generate_queries(A, M, F, D):
-#     query_obj = {}
-#     for a in A:
-#         m_str = ','.join(M)
-#         F_str = ','.join(F)
-#
-#         for d in D:
-#             query = f"SELECT {a}, {f}({m}) FROM {d} WHERE {a} IS NOT NULL GROUP BY {a}"
-
 
 
 def normalization(arr1, arr2):
     sum1 = sum(arr1)
     sum2 = sum(arr2)
-    norm_1 = arr1
-    norm_2 = arr2
-    if sum1 != 0:
-        norm_1 = [elem / sum1 for elem in arr1]
-    if sum2 != 0:
-        norm_2 = [elem / sum2 for elem in arr2]
+    norm_1 = [elem / sum1 for elem in arr1]
+    norm_2 = [elem / sum2 for elem in arr2]
 
     return norm_1, norm_2
 
-
-# Unoptimized part 2 exhaustive search
-# the function returns the query_obj[(a, m, f, d)] = [query:str, query_res: list(tuple)]
-def get_db_res(query_obj):
-    # get the query output given a specific query
-    cur = conn.cursor()
-    for k, v in query_obj.items():
-        cur.execute(v[0])
-        query_res = cur.fetchall()
-        # list of tuples
-        conn.commit()
-        # adding it into the value of dictionary
-        # first index is string second is return value
-        query_obj[k].append(query_res)
-    conn.close()
-
-    return query_obj
 
 # This function outputs the two normalized arrays for a specific a, m, f query with married and unmarried
 def get_normalized_list(query_obj1, query_obj2):
@@ -112,14 +74,8 @@ def get_normalized_list(query_obj1, query_obj2):
     arr2 = []
 
     # converting the tuples into dictionary for easier manipulation
-    query_tuple_dict_1 = {}
-    query_tuple_dict_2 = {}
-
-    for tuple in query_obj1[1]:
-        query_tuple_dict_1[tuple[0]] = tuple[1]
-
-    for tuple in query_obj2[1]:
-        query_tuple_dict_2[tuple[0]] = tuple[1]
+    query_tuple_dict_1 = dict(query_obj1)
+    query_tuple_dict_2 = dict(query_obj2)
 
     # find common attributes of the keys for evaluation
     common_attribute = set(query_tuple_dict_1.keys()) & set(query_tuple_dict_2.keys())
@@ -128,22 +84,17 @@ def get_normalized_list(query_obj1, query_obj2):
     for key in common_attribute:
         num1 = float(query_tuple_dict_1[key])
         num2 = float(query_tuple_dict_2[key])
-        if num1 != 0:
-            arr1.append(float(num1))
-        else:
-            arr1.append(float(1e-10))
-
-        if num2 != 0:
-            arr2.append(float(num2))
-        else:
-            arr2.append(float(1e-10))
+        arr1.append(float(num1) if num1 != 0 else float(1e-10))
+        arr2.append(float(num2) if num2 != 0 else float(1e-10))
 
     arr1, arr2 = normalization(arr1, arr2)
     return arr1, arr2
 
 
 def get_res(query_obj):
+    # result_dict[(a,m,f)] = distance
     result_dict = {}
+    # k = (a,m,f,d) v = [query, queryres]
     for k, v in query_obj.items():
         result_k = k[:-1]
         if result_k in result_dict:
@@ -158,6 +109,7 @@ def get_res(query_obj):
 
         arr1, arr2 = get_normalized_list(query_obj[k_1], query_obj[k_2])
 
+        # KL divergence
         distance = scipy.stats.entropy(arr1, arr2)
         result_dict[result_k] = distance
 
@@ -173,4 +125,4 @@ def get_res(query_obj):
     return result_dict
 
 
-get_res(get_db_res(generate_queries(A, M, F, D)))
+get_res(generate_queries(A, M, F, D))
