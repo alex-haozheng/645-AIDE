@@ -2,21 +2,8 @@ import numpy as np
 import psycopg2
 import scipy
 
-DB_NAME = "census"
-DB_USER = ""
-DB_PASS = ""
-DB_HOST = "localhost"
-DB_PORT = "5432"
 
-try:
-    conn = psycopg2.connect(database=DB_NAME,
-                            user=DB_USER,
-                            password=DB_PASS,
-                            host=DB_HOST,
-                            port=DB_PORT)
-    print("Database connected successfully")
-except:
-    print("Database not connected successfully")
+conn = psycopg2.connect(database="census", user="", password="", host="localhost",port="5432")
 
 
 # includes married people
@@ -34,7 +21,6 @@ M = ['age', 'fnlwgt', 'education_num', 'capital_gain', 'capital_loss', 'hours_pe
 # aggregate function 
 F = ['MIN', 'MAX', 'COUNT', 'SUM', 'AVG']
 
-# dictionary to store the query result and A M F D of the
 
 '''
 obj query_obj = {a: element in A, m: element in M, f: element in F, d: database name, 
@@ -64,7 +50,6 @@ def normalization(arr1, arr2):
     sum2 = sum(arr2)
     norm_1 = [elem / sum1 for elem in arr1]
     norm_2 = [elem / sum2 for elem in arr2]
-
     return norm_1, norm_2
 
 
@@ -79,7 +64,6 @@ def get_normalized_list(query_obj1, query_obj2):
 
     # find common attributes of the keys for evaluation
     common_attribute = set(query_tuple_dict_1.keys()) & set(query_tuple_dict_2.keys())
-
     # appending into the list, uses 1e-10 to avoid the scipy.stats.entropy warning
     for key in common_attribute:
         num1 = float(query_tuple_dict_1[key])
