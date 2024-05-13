@@ -9,12 +9,13 @@ def calc_running_confidence_interval(m, n, d):
     return (x / (2 * m)) ** 0.5
 
 
-def calc_bounds(m, query_obj, delta):
+# N and delta are assigned outside of the method
+def calc_bounds(query_obj, N, delta):
     query_dict = {}
     for k, v in query_obj.items():
         avg = sum(v) / len(v)
         query_dict[k]["avg"] = avg
-        ci = calc_running_confidence_interval(m, len(query_obj[k]), delta)
+        ci = calc_running_confidence_interval(len(query_obj[k]), N, delta)
         query_dict[k]["upper"] = avg + ci
         query_dict[k]["lower"] = avg - ci
 
