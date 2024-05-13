@@ -27,3 +27,22 @@ def calc_bounds(m, query_obj, delta):
 # some tuple amf (if low) get rid of it
 
 # some tuple amf-amf_1
+
+def prune_based_on_confidence_intervals(queries, delta):
+    # Calculate confidence intervals for each query
+    bounds = calc_bounds(len(queries), queries, delta)
+    
+    # Sort queries by upper bound of confidence interval
+    sorted_queries = sorted(bounds.items(), key=lambda x: x[1]["upper"])
+    
+    # Find the lowest lower bound among the top queries
+    top_queries = sorted_queries[:5] 
+    lowest_lower_bound = min(query[1]["lower"] for query in top_queries)
+    
+    # Prune queries with upper bound lower than lowest lower bound
+    pruned_queries = []
+    for query in top_queries:
+        if query[1]["upper"] < lowest_lower_bound:
+            pruned_queries.append(query[0])
+
+    return pruned_queries
