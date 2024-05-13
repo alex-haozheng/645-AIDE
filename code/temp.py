@@ -91,7 +91,6 @@ def get_res(query_obj):
         k_2 = tuple(k_arr)
 
         arr1, arr2 = get_normalized_list(query_obj[k_1], query_obj[k_2])
-
         # KL divergence
         distance = scipy.stats.entropy(arr1, arr2)
         result_dict[result_k] = distance
