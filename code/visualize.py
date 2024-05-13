@@ -11,13 +11,13 @@ NOTE: uses seaborn for better visualization
 will need to generalize a function in the end with input of query (a, m, f)'''
 
 # connect to db
-con = psy.connect(database='census', host='localhost')
+con = psy.connect(database='yiding', host='localhost')
 
 with con.cursor() as cur:
-	cur.execute('select race, avg(capital_gain) from married group by race')
+	cur.execute('select native_country, max(capital_gain) from married group by native_country')
 	tgt = cur.fetchall()
 
-	cur.execute('select race, avg(capital_gain) from unmarried group by race')
+	cur.execute('select native_country, max(capital_gain) from unmarried group by native_country')
 	ref = cur.fetchall()
 
 	# plot the graph using the list
@@ -35,12 +35,13 @@ with con.cursor() as cur:
 	merged_df = pd.merge(tgt_df, ref_df, how='outer', on='category')
 	merged_df.columns = ['category', 'married', 'unmarried']
 	# fill in blanks if one of the dataframes missing a category
-	merged_df.fillna("0", inplace=True)
+	merged_df.fillna(0, inplace=True)
 	print(merged_df)
 	# this is to convert it into rows for plotting in catplot (w/ help from chatgpt)
 	melted_df = pd.melt(merged_df, id_vars=['category'], value_vars=['married', 'unmarried'], var_name='marital_status', value_name='value')
 	print(melted_df)
-	sns.catplot(x='category', y='value', hue='marital_status', data=melted_df, kind='bar')
+	graph = sns.catplot(x='category', y='value', hue='marital_status', data=melted_df, kind='bar')
+	graph.set_xticklabels(rotation=45)
 	plt.show()
 	# x = np.arange(n)
 	# plt.bar(x-0.05, avg_ref, 0.1, color='green')
