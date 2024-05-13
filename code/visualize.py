@@ -14,13 +14,14 @@ will need to generalize a function in the end with input of query (a, m, f)'''
 con = psy.connect(database='census', host='localhost')
 
 with con.cursor() as cur:
-	cur.execute('select race, avg(capital_gain) from married group by race;')
+	cur.execute('select race, avg(capital_gain) from married group by race')
 	tgt = cur.fetchall()
-	cur.execute('select race, avg(capital_gain) from unmarried group by race;')
+
+	cur.execute('select race, avg(capital_gain) from unmarried group by race')
 	ref = cur.fetchall()
 
 	# plot the graph using the list
-	
+
 	# this finds the max length of the queries or max categories
 	n = max(len(tgt), len(ref))
 

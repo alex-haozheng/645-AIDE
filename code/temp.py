@@ -40,7 +40,7 @@ def generate_queries(A, M, F, D):
                     query = f"SELECT {a}, {f}({m}) FROM {d} WHERE {a} IS NOT NULL GROUP BY {a}"
                     cur.execute(query)
                     conn.commit()
-                    query_obj[(a, f, m, d)] = cur.fetchall()
+                    query_obj[(a, m, f, d)] = cur.fetchall()
     conn.close()
     return query_obj
 
