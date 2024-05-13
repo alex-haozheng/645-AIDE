@@ -87,8 +87,7 @@ def get_normalized_list(query_obj1, query_obj2):
         arr1.append(float(num1) if num1 != 0 else float(1e-10))
         arr2.append(float(num2) if num2 != 0 else float(1e-10))
 
-    arr1, arr2 = normalization(arr1, arr2)
-    return arr1, arr2
+    return normalization(arr1, arr2)
 
 
 def get_res(query_obj):
