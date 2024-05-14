@@ -2,9 +2,9 @@ import numpy as np
 import pandas as pd
 import psycopg2
 import scipy
+import time
 
-
-# TODO change variable to connect to presgresdb
+start_time = time.time()
 DB_NAME = "census"
 DB_HOST = "localhost"
 DB_PORT = "5432"
@@ -119,3 +119,7 @@ def get_topK(q):
 #[24(federal gov), 20(self emp), 25(state gov)] [8(fed), 17]
 
 get_topK(d)
+
+end_time = time.time()
+
+print("running time with sharing based: " + str(end_time - start_time))

@@ -1,8 +1,9 @@
 import numpy as np
 import psycopg2
 import scipy
+import time
 
-
+start_time = time.time()
 conn = psycopg2.connect(database="census", user="", password="", host="localhost",port="5432")
 
 
@@ -73,7 +74,7 @@ def get_normalized_list(query_obj1, query_obj2):
 
     return normalization(arr1, arr2)
 
-
+# queryobj[(a,m,f,d)] = query result: list of tuples
 def get_res(query_obj):
     # result_dict[(a,m,f)] = distance
     result_dict = {}
@@ -98,13 +99,16 @@ def get_res(query_obj):
     sorted_dict = dict(sorted(result_dict.items(), key=lambda item: item[1], reverse=True))
 
     # Get the top 10 items from the sorted dictionary
-    top_10 = dict(list(sorted_dict.items())[:10])
+    top_10 = dict(list(sorted_dict.items())[:5])
 
-    print("Top 10 dictionary items with highest distance:")
+    print("Top 5 dictionary items with highest distance:")
     for key, value in top_10.items():
         print(key, "=", value)
 
     return result_dict
 
+bruh = generate_queries(A,M,F,D)
+get_res(bruh)
+end_time = time.time()
 
-get_res(generate_queries(A, M, F, D))
+print("running time with exhaustive search: " + str(end_time - start_time))
